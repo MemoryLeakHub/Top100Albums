@@ -1,0 +1,105 @@
+plugins {
+    id("com.android.application")
+    id("kotlin-android")
+    id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.5.31"
+}
+
+android {
+    compileSdkVersion _compileSdkVersion
+
+    defaultConfig {
+        applicationId _applicationId
+        minSdk _minSdk
+        targetSdk _targetSdk
+        versionCode _versionCode
+        versionName _versionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion composeVersion
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+            excludes += "DebugProbesKt.bin"
+        }
+    }
+}
+
+dependencies {
+    implementation(project(":core"))
+    implementation(project(":datasource:network"))
+    implementation(project(":datasource:database"))
+    implementation(project(":domain"))
+    implementation(project(":ui:common"))
+    implementation(project(":ui:album"))
+
+    implementation(accompanistSystemUIController)
+    implementation(accompanistAnimations)
+    implementation(accompanistInsets)
+
+    implementation(coreCtx)
+    implementation(appCompat)
+
+    implementation(composeActivity)
+    implementation(composeUi)
+    implementation(composeMaterial)
+    debugImplementation(composeTooling)
+    implementation(composeToolingPreview)
+    implementation(composeNavigation)
+    implementation(composeHiltNavigation)
+
+    implementation(coil)
+
+    implementation(coroutines)
+    implementation(realmDb)
+
+    ///////////// hilt
+    implementation(hiltAndroid)
+    kapt(hiltCompiler)
+
+    androidTestImplementation(hiltAndroidTest)
+    kaptAndroidTest(hiltCompiler)
+
+    testImplementation(hiltAndroidTest)
+    kaptTest(hiltAndroidCompiler)
+    kaptAndroidTest(hiltAndroidCompiler)
+
+    androidTestAnnotationProcessor(hiltAndroidTest)
+    implementation(hiltAndroidTest)
+
+    androidTestAnnotationProcessor(hiltAndroidCompiler)
+    ///////////////
+    implementation(kotlinSerialization)
+    implementation(ktorCore)
+
+    implementation(retrofit)
+    implementation(retrofitMoshiConverter)
+    implementation(okHttpLoginInterceptor)
+    implementation(moshi)
+    implementation(moshiKotlin)
+
+}

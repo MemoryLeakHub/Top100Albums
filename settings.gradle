@@ -1,0 +1,26 @@
+
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://www.jitpack.io' }
+    }
+}
+rootProject.name = "TopAlbums"
+include ':app'
+include ':datasource'
+include ':datasource:database'
+include ':datasource:network'
+include ':domain'
+include ':ui'
+include ':ui:common'
+include ':core'
+include ':ui:album'

@@ -1,0 +1,20 @@
+apply {
+    from("$rootDir/android-library-build.gradle")
+}
+
+dependencies {
+    implementation(project(":core"))
+    implementation(project(":datasource:database"))
+    implementation(project(":datasource:network"))
+    implementation(composePaging)
+
+    implementation(retrofit)
+    implementation(retrofitMoshiConverter)
+    implementation(clientSerialization)
+    implementation(moshi)
+
+    testImplementation(junit)
+    testImplementation(mockk)
+    testImplementation(coroutinesTesting)
+    testImplementation(turbine)
+}
