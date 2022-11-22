@@ -8,6 +8,7 @@ import androidx.paging.PagingData
 import com.vrashkov.core.base.BaseViewModel
 import com.vrashkov.core.base.DataState
 import com.vrashkov.core.base.ProgressState
+import com.vrashkov.core.util.DataStoreManager
 import com.vrashkov.domain.model.AlbumSingle
 import com.vrashkov.domain.usecase.GetAlbumsNotifyUseCase
 import com.vrashkov.domain.usecase.GetAlbumsUseCase
@@ -22,7 +23,8 @@ class AlbumListVM
 constructor(
     private val savedStateHandle: SavedStateHandle,
     private val albumsUseCase: GetAlbumsUseCase,
-    private val getAlbumsNotifyUseCase: GetAlbumsNotifyUseCase
+    private val getAlbumsNotifyUseCase: GetAlbumsNotifyUseCase,
+    private val dataStore: DataStoreManager
 ): BaseViewModel<AlbumListState, AlbumListEvent>(){
 
     override val viewState: MutableState<AlbumListState> = mutableStateOf(AlbumListState())
@@ -38,7 +40,9 @@ constructor(
     override fun onTriggerEvent(event: AlbumListEvent){
         when (event) {
             is AlbumListEvent.OnAlbumClick -> { viewModelScope.launch {
-                _navigationEventFlow.emit(AlbumListNavigationEvent.NavigateToAlbumSingle(event.id))
+                    dataStore.setAlbumId(event.id)
+                    _navigationEventFlow.emit(AlbumListNavigationEvent.NavigateToAlbumSingle)
+
                 }
             }
             is AlbumListEvent.SwipeRefresh -> {  viewModelScope.launch {

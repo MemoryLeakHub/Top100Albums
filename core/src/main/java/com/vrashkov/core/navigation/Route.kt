@@ -26,12 +26,5 @@ fun Route.args(map:Map<String, String>) : String {
 sealed class Route(val link: String, val arguments: List<NamedNavArgument> = emptyList()) {
     object AlbumsList: Route(link = "albumsList")
 
-    object AlbumsSingle: Route(link = "albumsSingle?id={id}",
-        arguments = listOf(
-            navArgument("id") {
-                nullable = false
-                type = IntType
-            }
-        )
-    )
+    object AlbumsSingle: Route(link = "albumsSingle")
 }

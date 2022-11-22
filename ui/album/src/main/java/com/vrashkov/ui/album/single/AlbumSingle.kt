@@ -1,5 +1,6 @@
 package com.vrashkov.ui.album.single
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,11 +19,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.LazyPagingItems
@@ -30,6 +34,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.vrashkov.core.base.NavigationEvent
+import com.vrashkov.core.calculateCurrentSize
 import com.vrashkov.core.navigation.Route
 import com.vrashkov.core.theme.TopAlbumsTheme
 import com.vrashkov.domain.model.AlbumSingle
@@ -41,6 +46,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun AlbumSingleScreen(navController: NavHostController) {
 
+    val isSingle = TopAlbumsTheme.isSingle
     val viewModel = hiltViewModel<AlbumSingleVM>()
 
     val onTriggerEvents = viewModel::onTriggerEvent
@@ -50,8 +56,10 @@ fun AlbumSingleScreen(navController: NavHostController) {
         viewModel.navigationEventFlow.collect {
             when (it) {
                 is NavigationEvent.NavigateBack -> {
-                    navController.navigate(Route.AlbumsList.link) {
-                        launchSingleTop = true
+                    if (isSingle) {
+                        navController.navigate(Route.AlbumsList.link) {
+                            launchSingleTop = true
+                        }
                     }
                 }
             }
@@ -59,7 +67,7 @@ fun AlbumSingleScreen(navController: NavHostController) {
     }
 
     AlbumComponent(
-        viewModel, viewState, onTriggerEvents
+        viewModel, viewState, onTriggerEvents, isSingle
     )
 }
 
@@ -67,13 +75,15 @@ fun AlbumSingleScreen(navController: NavHostController) {
 fun AlbumComponent(
     viewModel: AlbumSingleVM,
     viewState: AlbumSingleState,
-    onTriggerEvents: (AlbumSingleEvent) -> Unit
+    onTriggerEvents: (AlbumSingleEvent) -> Unit,
+    isSingle: Boolean
 ) {
     val uriHandler = LocalUriHandler.current
     val album = viewState.album
     val arrowIcon: ImageVector = ImageVector.vectorResource(id = com.vrashkov.core.R.drawable.ic_back_arrow_left)
     val arrowIconPainter = rememberVectorPainter(image = arrowIcon)
-    album?.let {
+
+    if (album != null)  {
         Column (modifier = Modifier.fillMaxSize().background(color = TopAlbumsTheme.colors.primary)) {
             Box(Modifier.fillMaxWidth().wrapContentHeight()) {
                 AsyncImage(
@@ -85,27 +95,30 @@ fun AlbumComponent(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxWidth().aspectRatio(1f)
                 )
-                Box(Modifier.padding(top = 17.dp, start = 16.dp)) {
-                    Box(
-                        modifier = Modifier.size(32.dp)
-                            .clip(CircleShape)
-                            .background(TopAlbumsTheme.colors.primary.copy(alpha = 0.5f))
-                            .clickable(
-                                onClick = {
-                                    onTriggerEvents(AlbumSingleEvent.OnBackClick)
-                                },
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = rememberRipple(
-                                    color = TopAlbumsTheme.colors.primary
+
+                if (isSingle) {
+                    Box(Modifier.padding(top = 17.dp, start = 16.dp)) {
+                        Box(
+                            modifier = Modifier.size(32.dp)
+                                .clip(CircleShape)
+                                .background(TopAlbumsTheme.colors.primary.copy(alpha = 0.5f))
+                                .clickable(
+                                    onClick = {
+                                        onTriggerEvents(AlbumSingleEvent.OnBackClick)
+                                    },
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = rememberRipple(
+                                        color = TopAlbumsTheme.colors.primary
+                                    )
                                 )
+                        ) {
+                            Icon(
+                                modifier = Modifier.height(19.dp).align(Alignment.Center),
+                                painter = arrowIconPainter,
+                                tint = Color.Unspecified,
+                                contentDescription = null,
                             )
-                    ) {
-                        Icon(
-                            modifier = Modifier.height(19.dp).align(Alignment.Center),
-                            painter = arrowIconPainter,
-                            tint = Color.Unspecified,
-                            contentDescription = null,
-                        )
+                        }
                     }
                 }
             }
@@ -170,6 +183,16 @@ fun AlbumComponent(
                 Spacer(modifier = Modifier.height(47.dp))
             }
         }
+    } else {
+        Box (Modifier.fillMaxSize()) {
+            Text(
+                modifier = Modifier.fillMaxSize().align(Alignment.Center),
+                text = "Choose an Album",
+                style = TopAlbumsTheme.typography.h1,
+                textAlign = TextAlign.Center,
+                fontSize = 27.sp,
+                color = TopAlbumsTheme.colors.labelPrimary
+            )
+        }
     }
-
 }

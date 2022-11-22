@@ -5,6 +5,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
@@ -25,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.navOptions
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -46,6 +49,7 @@ import com.vrashkov.domain.model.AlbumSingle
 @Composable
 fun AlbumListScreen(navController: NavHostController) {
 
+    val isSingle = TopAlbumsTheme.isSingle
     val viewModel = hiltViewModel<AlbumListVM>()
 
     val onTriggerEvents = viewModel::onTriggerEvent
@@ -57,12 +61,9 @@ fun AlbumListScreen(navController: NavHostController) {
         viewModel.navigationEventFlow.collect {
             when (it) {
                 is AlbumListNavigationEvent.NavigateToAlbumSingle -> {
-                    navController.navigate(Route.AlbumsSingle.args(
-                        mapOf(
-                            "id" to it.id
-                        )
-                    )) {
-                        launchSingleTop = true
+                    val link = Route.AlbumsSingle.link
+                    if (isSingle) {
+                        navController.navigate(link)
                     }
                 }
             }
@@ -92,6 +93,7 @@ fun AlbumListComponent(
     lazyAlbumList: LazyPagingItems<AlbumSingle>
 ) {
     val lazyGridState = rememberLazyGridState()
+
     val toolbarLabel: String = "Top 100 Albums"
     var maximumScroll: Float
     var toolbarExpandedHeight: Float
@@ -113,7 +115,8 @@ fun AlbumListComponent(
     val currentOffset: Float by remember {
         derivedStateOf {
             val offset = lazyGridState.firstVisibleItemScrollOffset
-
+            val index = lazyGridState.firstVisibleItemIndex
+            println("offset: $offset, index: $index")
             if (lazyGridState.firstVisibleItemIndex > 0) {
                 maximumScroll
             } else {
@@ -181,11 +184,11 @@ fun AlbumListComponent(
         Column (modifier = Modifier.fillMaxWidth()){
             Box (modifier = Modifier
                 .fillMaxWidth()
-                .height(toolbarHeight)) {
-
+                .height(toolbarHeight)
+            ) {
                 Box(
                     modifier = Modifier.fillMaxSize()
-                    .background(color = TopAlbumsTheme.colors.primary.copy(alpha = 0.9f))
+                    .background(color = TopAlbumsTheme.colors.buttonPrimary.copy(alpha = 0.9f))
                 )
 
                 Box(modifier = Modifier.fillMaxWidth()

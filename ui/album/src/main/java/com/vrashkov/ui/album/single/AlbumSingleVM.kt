@@ -7,28 +7,34 @@ import androidx.lifecycle.viewModelScope
 import com.vrashkov.core.base.BaseViewModel
 import com.vrashkov.core.base.DataState
 import com.vrashkov.core.base.NavigationEvent
+import com.vrashkov.core.util.DataStoreManager
 import com.vrashkov.domain.usecase.GetAlbumSingleUseCase
 import com.vrashkov.ui.album.list.AlbumListEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
 class AlbumSingleVM
 @Inject
 constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val getAlbumSingleUseCase: GetAlbumSingleUseCase
+    private val getAlbumSingleUseCase: GetAlbumSingleUseCase,
+    private val dataStore: DataStoreManager
 ): BaseViewModel<AlbumSingleState, AlbumSingleEvent>(){
 
     override val viewState: MutableState<AlbumSingleState> = mutableStateOf(AlbumSingleState())
 
-    private val albumId: String? = savedStateHandle["id"]
-
     init {
-        getAlbumSingle()
+        viewModelScope.launch {
+            dataStore.getAlbumId.collect { albumId ->
+                getAlbumSingle(albumId)
+            }
+        }
     }
 
     override fun onTriggerEvent(event: AlbumSingleEvent){
@@ -42,10 +48,10 @@ constructor(
         }
     }
 
-    private fun getAlbumSingle() {
+    private fun getAlbumSingle(albumId: String?) {
         viewModelScope.launch {
             if (!albumId.isNullOrEmpty()) {
-                getAlbumSingleUseCase.execute(albumId).collect { result ->
+                getAlbumSingleUseCase.execute(albumId!!).collect { result ->
                     when(result) {
                         is DataState.Data -> {
                             viewState.value = viewState.value.copy(
@@ -60,8 +66,6 @@ constructor(
                         }
                     }
                 }
-            } else { // if for some reason albumId is not found go to the albums
-                _navigationEventFlow.emit(NavigationEvent.NavigateBack)
             }
         }
     }

@@ -3,6 +3,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-parcelize'
+apply plugin: 'io.realm.kotlin'
 
 android {
     compileSdkVersion _compileSdkVersion
@@ -59,6 +60,8 @@ dependencies{
     implementation(composeConstraintLayout)
     debugImplementation(composeCustomView)
     debugImplementation(composeCustomViewPooling)
+    implementation(dataStorePreferences)
+    implementation(dataStorePreferencesCore)
 
     implementation(coroutines)
     implementation(realmDb)
