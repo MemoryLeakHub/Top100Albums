@@ -14,4 +14,8 @@ data class AlbumSingle (
     var genres: List<String> = listOf(),
     var image: String = "",
     var releaseDate: LocalDate = LocalDate.now()
-)
+) {
+    fun largeImage() : String {
+        return this.image.replace("100x100bb", "1000x1000bb")
+    }
+}

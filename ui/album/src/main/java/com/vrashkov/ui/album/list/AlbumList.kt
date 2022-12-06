@@ -145,7 +145,8 @@ fun AlbumListComponent(
 
     // we make sure the loader appear only when the lazy results finished loading and have no items in them
     // only than if progress has state of ProgressBarState.Loading it will be loading
-    loadingProgressBarEnabled = viewState.progress == ProgressState.Loading && (!lazyAlbumsIsRefreshing && lazyAlbumList.itemCount <= 0)
+    loadingProgressBarEnabled = viewState.progress ==
+            ProgressState.Loading && (!lazyAlbumsIsRefreshing && lazyAlbumList.itemCount <= 0)
 
     Box (modifier = Modifier.fillMaxSize().background(color = TopAlbumsTheme.colors.primary)) {
         SwipeRefresh(

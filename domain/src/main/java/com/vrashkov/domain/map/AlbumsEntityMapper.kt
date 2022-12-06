@@ -12,7 +12,6 @@ class AlbumsEntityMapper {
     companion object {
         fun map(entities: List<AlbumSingle>): List<AlbumsEntity> {
 
-
             val list: MutableList<AlbumsEntity> = mutableListOf()
             entities.forEach { data ->
 

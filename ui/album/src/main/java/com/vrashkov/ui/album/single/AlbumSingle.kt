@@ -40,6 +40,7 @@ import com.vrashkov.core.theme.TopAlbumsTheme
 import com.vrashkov.domain.model.AlbumSingle
 import com.vrashkov.ui.common.FilledButton
 import com.vrashkov.ui.common.LabelButton
+import com.vrashkov.ui.common.LoadableAsyncImage
 import java.time.format.DateTimeFormatter
 
 @ExperimentalMaterialApi
@@ -86,16 +87,24 @@ fun AlbumComponent(
     if (album != null)  {
         Column (modifier = Modifier.fillMaxSize().background(color = TopAlbumsTheme.colors.primary)) {
             Box(Modifier.fillMaxWidth().wrapContentHeight()) {
-                AsyncImage(
+//                AsyncImage(
+//                    model = ImageRequest.Builder(LocalContext.current)
+//                        .data(album.image)
+//                        .crossfade(true)
+//                        .build(),
+//                    contentDescription = null,
+//                    contentScale = ContentScale.Crop,
+//                    modifier = Modifier.fillMaxWidth().aspectRatio(1f)
+//                )
+                LoadableAsyncImage(
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1f),
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(album.image)
+                        .data(album.largeImage())
                         .crossfade(true)
                         .build(),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1f)
+                    contentDescription = "album image",
+                    placeholderMemoryCacheKey = album.image,
                 )
-
                 if (isSingle) {
                     Box(Modifier.padding(top = 17.dp, start = 16.dp)) {
                         Box(

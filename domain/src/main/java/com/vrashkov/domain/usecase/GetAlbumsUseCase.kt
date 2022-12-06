@@ -52,7 +52,10 @@ class GetAlbumsUseCase @Inject constructor(
     fun execute(pageSize: Int): Flow<PagingData<AlbumSingle>> {
 
         val albums: Flow<PagingData<AlbumSingle>> = Pager(PagingConfig(pageSize = pageSize)) {
-            AlbumsPaging(filter = AlbumsFilterQuery(per_page = pageSize), albumsRepositoryLocal = albumsRepositoryLocal)
+            AlbumsPaging(
+                filter = AlbumsFilterQuery(per_page = pageSize),
+                albumsRepositoryLocal = albumsRepositoryLocal
+            )
         }.flow
 
         return albums
